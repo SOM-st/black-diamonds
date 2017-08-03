@@ -18,9 +18,6 @@ import bd.settings.VmSettings;
  * @param <ExprT> the root type of expressions used by the language
  */
 public class Specializer<T, Context, ExprT> {
-  private static final boolean eagerWrapperBool = true;
-  private static final boolean sourceSection    = true;
-
   protected final Context                    context;
   protected final Primitive                  prim;
   protected final NodeFactory<T>             fact;
@@ -86,11 +83,11 @@ public class Specializer<T, Context, ExprT> {
   private int numberOfNodeConstructorArguments(final ExprT[] argNodes) {
     int args = argNodes.length;
 
-    if (eagerWrapperBool) {
+    if (VmSettings.NODES_REQUIRE_EAGER_WRAPPER_BOOL) {
       args += 1;
     }
 
-    if (sourceSection) {
+    if (VmSettings.NODES_REQUIRE_SOURCE_SECTION) {
       args += 1;
     }
 
@@ -108,12 +105,12 @@ public class Specializer<T, Context, ExprT> {
     Object[] ctorArgs = new Object[numArgs];
     int offset = 0;
 
-    if (eagerWrapperBool) {
+    if (VmSettings.NODES_REQUIRE_EAGER_WRAPPER_BOOL) {
       ctorArgs[offset] = eagerWrapper;
       offset += 1;
     }
 
-    if (sourceSection) {
+    if (VmSettings.NODES_REQUIRE_SOURCE_SECTION) {
       ctorArgs[offset] = section;
       offset += 1;
     }
