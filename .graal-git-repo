@@ -1,0 +1,44 @@
+#!/bin/bash
+# This script maintains the Graal+Truffle repository and revision used for
+# testing in the CI setup. We don't use a submodule here to avoid a hard 
+# dependency that might bloat the repository of users of BlackDiamonds
+#
+# To update to latest HEAD of the configure repo,
+#   run `./.graal-git-repo updaterev`
+# To checkout the repo at the specified version,
+#   run `./.graal-git-repo checkout`
+
+SCRIPT="$0"
+ 
+if [ "$1" = "updaterev" ]
+then
+  eval `${SCRIPT}`
+  HEAD_DATA=`git ls-remote ${GRAAL_REPO_URL} HEAD`
+  HEAD_ARR=($HEAD_DATA)
+  HEAD_GRAAL_REV=${HEAD_ARR[0]}
+  HEAD_DATA=`git ls-remote ${MX_REPO_URL} HEAD`
+  HEAD_ARR=($HEAD_DATA)
+  HEAD_MX_REV=${HEAD_ARR[0]}
+  SCRIPT_BODY=`head -n 42 ${SCRIPT}; echo -n "echo "`
+  echo "${SCRIPT_BODY}GRAAL_REPO_REV=${HEAD_GRAAL_REV}
+echo MX_REPO_REV=${HEAD_MX_REV}" > ${SCRIPT}; exit 0
+fi
+
+if [ "$1" = "checkout" ]
+then
+  eval `${SCRIPT}`
+  git clone ${GRAAL_REPO_URL} graal
+  cd graal
+  git reset --hard ${GRAAL_REPO_REV}
+  cd ..
+  git clone ${MX_REPO_URL} mx
+  cd mx
+  git reset --hard ${MX_REPO_REV}
+fi
+
+
+# Version used for testing
+echo GRAAL_REPO_URL=https://github.com/smarr/truffle.git
+echo MX_REPO_URL=https://github.com/graalvm/mx.git
+echo GRAAL_REPO_REV=3b5ddeaa951ee46ec11790d0be76969c8d1ee9e3
+echo MX_REPO_REV=11ac8146e64bcc126fb75b0a738db24af933b693
