@@ -1,0 +1,10 @@
+stages:
+  - build-and-test
+
+build_and_test_job:
+  stage: build-and-test
+  tags: [benchmarks, infinity]
+  script:
+    - ant test
+    #- ant eclipseformat   # don't have eclipse on CI yet
+    - ant checkstyle
