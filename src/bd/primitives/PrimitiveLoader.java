@@ -17,12 +17,12 @@ import com.oracle.truffle.api.dsl.NodeFactory;
  *          of interned string construct
  * @param <EagerT> the type of eagerly specializable nodes
  */
-public abstract class PrimitiveLoader<Context, ExprT, Id, EagerT> {
+public abstract class PrimitiveLoader<Context, ExprT, Id> {
 
   protected final Context context;
 
   /** Primitives for selector. */
-  protected final HashMap<Id, Specializer<? extends ExprT, Context, ExprT>> eagerPrimitives;
+  protected final HashMap<Id, Specializer<Context, ExprT, Id>> eagerPrimitives;
 
   /**
    * Initializes the PrimitiveLoader.
@@ -46,12 +46,11 @@ public abstract class PrimitiveLoader<Context, ExprT, Id, EagerT> {
    * the primitive allows in-parser specialization, and the argument nodes match the
    * expectations, than a specializer is returned. otherwise, null is returned.
    */
-  @SuppressWarnings("unchecked")
-  public final Specializer<EagerT, Context, ExprT> getParserSpecializer(final Id selector,
+  public final Specializer<Context, ExprT, Id> getParserSpecializer(final Id selector,
       final ExprT[] argNodes) {
-    Specializer<? extends ExprT, Context, ExprT> specializer = eagerPrimitives.get(selector);
+    Specializer<Context, ExprT, Id> specializer = eagerPrimitives.get(selector);
     if (specializer != null && specializer.inParser() && specializer.matches(null, argNodes)) {
-      return (Specializer<EagerT, Context, ExprT>) specializer;
+      return specializer;
     }
     return null;
   }
@@ -64,13 +63,12 @@ public abstract class PrimitiveLoader<Context, ExprT, Id, EagerT> {
    * well as the argument nodes match for the specialization. If they match, the specializer is
    * returned, null is returned otherwise.
    */
-  @SuppressWarnings("unchecked")
-  public final Specializer<EagerT, Context, ExprT> getEagerSpecializer(final Id selector,
+  public final Specializer<Context, ExprT, Id> getEagerSpecializer(final Id selector,
       final Object[] arguments, final ExprT[] argumentNodes) {
-    Specializer<? extends ExprT, Context, ExprT> specializer =
+    Specializer<Context, ExprT, Id> specializer =
         eagerPrimitives.get(selector);
     if (specializer != null && specializer.matches(arguments, argumentNodes)) {
-      return (Specializer<EagerT, Context, ExprT>) specializer;
+      return specializer;
     }
     return null;
   }
@@ -79,8 +77,8 @@ public abstract class PrimitiveLoader<Context, ExprT, Id, EagerT> {
    * Create a {@link Specializer} for the given {@link Primitive}.
    */
   @SuppressWarnings("unchecked")
-  protected final <T> Specializer<T, Context, ExprT> createSpecializer(final Primitive prim,
-      final NodeFactory<? extends ExprT> factory) {
+  protected final <T> Specializer<Context, ExprT, Id> createSpecializer(
+      final Primitive prim, final NodeFactory<? extends ExprT> factory) {
     try {
       // Try with erased type signature
       return prim.specializer()

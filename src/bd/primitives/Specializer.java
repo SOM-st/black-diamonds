@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.source.SourceSection;
 
+import bd.nodes.EagerlySpecializable;
+import bd.nodes.WithContext;
 import bd.primitives.Primitive.NoChild;
 import bd.settings.VmSettings;
 
@@ -13,29 +15,38 @@ import bd.settings.VmSettings;
  * A Specializer defines when a node can be used as a eager primitive, how
  * it is to be instantiated, and acts as factory for them.
  *
- * @param <T> the type of the nodes created by this specializer
  * @param <Context> the type of the context object
  * @param <ExprT> the root type of expressions used by the language
+ * @param <Id> the type of the identifiers used for mapping to primitives, typically some form
+ *          of interned string construct
  */
-public class Specializer<T, Context, ExprT> {
+public class Specializer<Context, ExprT, Id> {
   protected final Context                    context;
   protected final Primitive                  prim;
-  protected final NodeFactory<T>             fact;
+  protected final NodeFactory<ExprT>         fact;
   private final NodeFactory<? extends ExprT> extraChildFactory;
 
+  private final int     extraArity;
+  private final boolean requiresContext;
+
   @SuppressWarnings("unchecked")
-  public Specializer(final Primitive prim, final NodeFactory<T> fact, final Context context) {
+  public Specializer(final Primitive prim, final NodeFactory<ExprT> fact,
+      final Context context) {
     this.prim = prim;
     this.fact = fact;
     this.context = context;
 
+    this.requiresContext = WithContext.class.isAssignableFrom(fact.getNodeClass());
+
     if (prim.extraChild() == NoChild.class) {
       extraChildFactory = null;
+      extraArity = 0;
     } else {
       try {
         extraChildFactory =
             (NodeFactory<? extends ExprT>) prim.extraChild().getMethod("getInstance")
                                                .invoke(null);
+        extraArity = extraChildFactory.getExecutionSignature().size();
       } catch (IllegalAccessException | IllegalArgumentException
           | InvocationTargetException | NoSuchMethodException
           | SecurityException e) {
@@ -83,42 +94,19 @@ public class Specializer<T, Context, ExprT> {
   private int numberOfNodeConstructorArguments(final ExprT[] argNodes) {
     int args = argNodes.length;
 
-    if (VmSettings.NODES_REQUIRE_EAGER_WRAPPER_BOOL) {
-      args += 1;
-    }
-
-    if (VmSettings.NODES_REQUIRE_SOURCE_SECTION) {
-      args += 1;
-    }
-
     return args +
         (extraChildFactory != null ? 1 : 0) +
-        (prim.requiresArguments() ? 1 : 0) +
-        (prim.requiresContext() ? 1 : 0);
+        (prim.requiresArguments() ? 1 : 0);
   }
 
-  public T create(final Object[] arguments, final ExprT[] argNodes,
+  @SuppressWarnings("unchecked")
+  public ExprT create(final Object[] arguments, final ExprT[] argNodes,
       final SourceSection section, final boolean eagerWrapper) {
     assert arguments == null || arguments.length == argNodes.length;
     int numArgs = numberOfNodeConstructorArguments(argNodes);
 
     Object[] ctorArgs = new Object[numArgs];
     int offset = 0;
-
-    if (VmSettings.NODES_REQUIRE_EAGER_WRAPPER_BOOL) {
-      ctorArgs[offset] = eagerWrapper;
-      offset += 1;
-    }
-
-    if (VmSettings.NODES_REQUIRE_SOURCE_SECTION) {
-      ctorArgs[offset] = section;
-      offset += 1;
-    }
-
-    if (prim.requiresContext()) {
-      ctorArgs[offset] = context;
-      offset += 1;
-    }
 
     if (prim.requiresArguments()) {
       assert arguments != null;
@@ -132,10 +120,15 @@ public class Specializer<T, Context, ExprT> {
     }
 
     if (extraChildFactory != null) {
-      ctorArgs[offset] = extraChildFactory.createNode(null, null);
+      ctorArgs[offset] = extraChildFactory.createNode(new Object[extraArity]);
       offset += 1;
     }
 
-    return fact.createNode(ctorArgs);
+    ExprT node = fact.createNode(ctorArgs);
+    ((EagerlySpecializable<ExprT, Id, Context>) node).initialize(section, eagerWrapper);
+    if (requiresContext) {
+      ((WithContext<?, Context>) node).initialize(context);
+    }
+    return node;
   }
 }
