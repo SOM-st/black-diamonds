@@ -6,8 +6,4 @@ package bd.settings;
  */
 public interface Settings {
   boolean dynamicMetricsEnabled();
-
-  boolean nodesRequireSourceSection();
-
-  boolean nodesRequireEagerWrappingBoolean();
 }

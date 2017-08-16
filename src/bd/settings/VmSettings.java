@@ -7,19 +7,17 @@ package bd.settings;
 public class VmSettings {
   public static final boolean DYNAMIC_METRICS;
 
-  public static final boolean NODES_REQUIRE_EAGER_WRAPPER_BOOL;
-  public static final boolean NODES_REQUIRE_SOURCE_SECTION;
-
   static {
     Settings s = getSettings();
 
     DYNAMIC_METRICS = s.dynamicMetricsEnabled();
-    NODES_REQUIRE_EAGER_WRAPPER_BOOL = s.nodesRequireEagerWrappingBoolean();
-    NODES_REQUIRE_SOURCE_SECTION = s.nodesRequireSourceSection();
   }
 
   private static Settings getSettings() {
     String className = System.getProperty("bd.settings");
+    if (className == null) {
+      return new AllDisabled();
+    }
 
     try {
       Class<?> clazz = VmSettings.class.getClassLoader().loadClass(className);

@@ -6,14 +6,4 @@ public class AllDisabled implements Settings {
   public boolean dynamicMetricsEnabled() {
     return false;
   }
-
-  @Override
-  public boolean nodesRequireSourceSection() {
-    return false;
-  }
-
-  @Override
-  public boolean nodesRequireEagerWrappingBoolean() {
-    return false;
-  }
 }
