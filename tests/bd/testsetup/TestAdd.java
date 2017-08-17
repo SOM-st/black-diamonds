@@ -11,7 +11,7 @@ public class TestAdd {
 
   @Test
   public void testLiteralIntegerAddition() throws UnexpectedResultException {
-    AddNode node = AddNodeGen.create(new IntLiteral(2), new IntLiteral(40));
+    AddNode node = AddNodeFactory.create(new IntLiteral(2), new IntLiteral(40));
     assertEquals(42, node.executeInt(null));
   }
 }

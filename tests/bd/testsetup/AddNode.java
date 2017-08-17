@@ -1,11 +1,16 @@
 package bd.testsetup;
 
+import com.oracle.truffle.api.dsl.GenerateNodeFactory;
 import com.oracle.truffle.api.dsl.NodeChild;
 import com.oracle.truffle.api.dsl.Specialization;
+
+import bd.primitives.Primitive;
 
 
 @NodeChild(value = "left", type = ExprNode.class)
 @NodeChild(value = "right", type = ExprNode.class)
+@Primitive(className = "Int", primitive = "+", selector = "+")
+@GenerateNodeFactory
 public abstract class AddNode extends ExprNode {
 
   @Specialization
