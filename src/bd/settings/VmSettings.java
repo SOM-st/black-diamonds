@@ -20,7 +20,7 @@ public class VmSettings {
     }
 
     try {
-      Class<?> clazz = VmSettings.class.getClassLoader().loadClass(className);
+      Class<?> clazz = Class.forName(className);
       return (Settings) clazz.newInstance();
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
       // Checkstyle: stop
