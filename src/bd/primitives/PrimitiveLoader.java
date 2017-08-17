@@ -15,20 +15,18 @@ import com.oracle.truffle.api.dsl.NodeFactory;
  * @param <ExprT> the root type of expressions used by the language
  * @param <Id> the type of the identifiers used for mapping to primitives, typically some form
  *          of interned string construct
- * @param <EagerT> the type of eagerly specializable nodes
  */
 public abstract class PrimitiveLoader<Context, ExprT, Id> {
 
   protected final Context context;
 
   /** Primitives for selector. */
-  protected final HashMap<Id, Specializer<Context, ExprT, Id>> eagerPrimitives;
+  private final HashMap<Id, Specializer<Context, ExprT, Id>> eagerPrimitives;
 
   /**
    * Initializes the PrimitiveLoader.
    *
    * @param context the object representing the language's context
-   *
    */
   protected PrimitiveLoader(final Context context) {
     this.context = context;
@@ -37,6 +35,51 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
 
   /** Returns all node factories that might contain primitives. */
   protected abstract List<NodeFactory<? extends ExprT>> getFactories();
+
+  /**
+   * Setup the lookup data structures for VM primitive registration as well as
+   * eager primitive replacement.
+   *
+   * <p>
+   * This methods should be called when the constructor completes.
+   */
+  protected void initialize() {
+    List<NodeFactory<? extends ExprT>> primFacts = getFactories();
+    for (NodeFactory<? extends ExprT> primFact : primFacts) {
+      Primitive[] prims = getPrimitiveAnnotation(primFact);
+      if (prims != null) {
+        for (bd.primitives.Primitive prim : prims) {
+          Specializer<Context, ExprT, Id> specializer = createSpecializer(prim, primFact);
+          registerPrimitive(prim, specializer);
+
+          if (!("".equals(prim.selector()))) {
+            Id selector = getId(prim.selector());
+            assert !eagerPrimitives.containsKey(
+                selector) : "clash of selectors and eager specialization";
+            eagerPrimitives.put(selector, specializer);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * {@link #initialize()} iterates over all factories and consequently primitives provided by
+   * {@link #getFactories()}. These primitives are exposed by this method to allow custom
+   * handling, for instance to install them in language-level classes.
+   *
+   * @param prim the primitive annotation
+   * @param specializer the specializer object for this primitive
+   */
+  protected abstract void registerPrimitive(Primitive prim,
+      Specializer<Context, ExprT, Id> specializer);
+
+  /**
+   * Gets a Java string and needs to return an identifier that is used to map to the primitive.
+   * Typically, this is some form of symbol or interned string that can be safely compared with
+   * reference equality.
+   */
+  protected abstract Id getId(String id);
 
   /**
    * Lookup a specializer for use during parsing.
@@ -65,8 +108,7 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    */
   public final Specializer<Context, ExprT, Id> getEagerSpecializer(final Id selector,
       final Object[] arguments, final ExprT[] argumentNodes) {
-    Specializer<Context, ExprT, Id> specializer =
-        eagerPrimitives.get(selector);
+    Specializer<Context, ExprT, Id> specializer = eagerPrimitives.get(selector);
     if (specializer != null && specializer.matches(arguments, argumentNodes)) {
       return specializer;
     }
@@ -77,8 +119,8 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    * Create a {@link Specializer} for the given {@link Primitive}.
    */
   @SuppressWarnings("unchecked")
-  protected final <T> Specializer<Context, ExprT, Id> createSpecializer(
-      final Primitive prim, final NodeFactory<? extends ExprT> factory) {
+  private <T> Specializer<Context, ExprT, Id> createSpecializer(final Primitive prim,
+      final NodeFactory<? extends ExprT> factory) {
     try {
       // Try with erased type signature
       return prim.specializer()
@@ -103,8 +145,7 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
   /**
    * Get the {@link Primitive} annotation from a {@link NodeFactory}.
    */
-  protected final Primitive[] getPrimitiveAnnotation(
-      final NodeFactory<? extends ExprT> factory) {
+  Primitive[] getPrimitiveAnnotation(final NodeFactory<? extends ExprT> factory) {
     Class<?> nodeClass = factory.getNodeClass();
     return nodeClass.getAnnotationsByType(Primitive.class);
   }
