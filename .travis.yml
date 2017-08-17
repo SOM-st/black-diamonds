@@ -8,6 +8,10 @@ addons:
     packages:
     - ant-optional
 
+env:
+  global:
+    secure: XQ50fgqK/UeHjh6KNgg6v1qKJmIHzca8lexrj9uvsVJohdLcahE43uN/Xi8935/jKsZ66loVTtCTpKrqZiZpwlb4KJmr2QfDGFffPFnPCfE7B8MWBEWje1zldyAAa4FHLjHAwkcemdkiykCEgabVOYAWzCGAhqoYE6aOMbn3mYLPZ6QK4zrgFrihqMts0app5PwRwvbRmO58+hpiBggCWcRO1DDIRt6ulIr4VkcqMtlwVORZIh1CtuEqzJeIfRZl6NcDpcq+TOiXbBnrYD++O2fVQM0ZdCcRtGwlGcRL+PY+ctBwL/pgkHdx7IZo689hFChdwyScx8h35iaLL20H4divoBRhZp3YvAZEyBR0URiX3hwnDxwgerzU4KhY/HHyNsTwjTRAM9Q3J9RGgJd1WzaOMliQ717iK8oijorq8GlgecDbu2BdsoAvk/2BPpVPCSbpqx/Tj1lESRJG634HIO/m/4yI1U4r5s8D+cCGBOq4Voc6BlF9Z4xnLDC7hSdz90PsCsXKTRc3Ks9tUNAopZZH3Z8CRykJEF/bTxD2o5vh5L4UZzl15YmlNvXCa1i17XEdFqsov5zfTiUH849gy8dlOi3yTw09+hX7p810EwpoQP+rBD5uEESrIAh15KrMBVi0GjpBrdGXeqivIZB7GUBfuzwfXIGS4iTXcs7K9do=
+
 install:
   - |
       export ECLIPSE_TAR=eclipse.tar.gz
@@ -19,3 +23,4 @@ script:
   - ant test
   - ant eclipseformat
   - ant checkstyle
+  - ant coverage-jars; ant coverage-report
