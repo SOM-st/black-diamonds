@@ -1,4 +1,4 @@
-<project name="black-diamonds" basedir="." default="compile">
+<project name="black-diamonds" basedir="." default="compile" xmlns:jacoco="antlib:org.jacoco.ant">
 
     <property name="src.dir"     value="src"/>
     <property name="src_gen.dir" value="src_gen"/>
@@ -11,6 +11,7 @@
     <property name="junit.version" value="4.12" />
 
     <property name="checkstyle.version" value="7.8.2" />
+    <property name="mvn.url" value="https://repo1.maven.org/maven2" />
 
     <property environment="env"/>
 
@@ -96,13 +97,27 @@
 
     <target name="libs" depends="graal">
         <mkdir dir="${lib.dir}" />
-        <get src="https://repo1.maven.org/maven2/junit/junit/${junit.version}/junit-${junit.version}.jar"
+        <get src="${mvn.url}/junit/junit/${junit.version}/junit-${junit.version}.jar"
             usetimestamp="true"
             dest="${lib.dir}/junit-${junit.version}.jar" />
-        <get src="https://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
+        <get src="${mvn.url}/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"
             usetimestamp="true"
             dest="${lib.dir}/hamcrest-core-1.3.jar" />
     </target>
+
+    <target name="coverage-jars">
+        <mkdir dir="${lib.dir}" />
+        <get src="${mvn.url}/org/jacoco/org.jacoco.ant/0.7.9/org.jacoco.ant-0.7.9-nodeps.jar"
+            usetimestamp="true"
+            dest="${lib.dir}/org.jacoco.ant-0.7.9.jar" />
+        <get src="https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/2.0.0/codacy-coverage-reporter-2.0.0-assembly.jar"
+            usetimestamp="true"
+            dest="${lib.dir}/codacy-coverage-reporter-2.0.0-assembly.jar" />
+    </target>
+    
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${lib.dir}/org.jacoco.ant-0.7.9.jar"/>
+    </taskdef>
 
     <target name="checkstyle-jar">
         <mkdir dir="${lib.dir}" />
@@ -144,20 +159,70 @@
         <jar destfile="${build.dir}/black-diamonds.jar" basedir="${classes.dir}"></jar>
     </target>
 
+    <macrodef name="junit-bd">
+        <sequential>
+            <junit haltonerror="false" haltonfailure="false" failureproperty="test.failed"
+                outputtoformatters="true">
+                <jvmarg value="-ea" />
+                <jvmarg value="-esa" />
+                <classpath refid="project.classpath" />
+                <batchtest fork="yes" filtertrace="false">
+                  <fileset dir="tests">
+                      <include name="**/*Test*.java"/>
+                  </fileset>
+                </batchtest>
+                <formatter type="brief" usefile="false"/>
+            </junit>
+        </sequential>
+    </macrodef>
+
     <target name="test" depends="compile" description="Execute tests">
-        <junit haltonerror="false" haltonfailure="false" failureproperty="test.failed"
-            outputtoformatters="true">
-            <jvmarg value="-ea" />
-            <jvmarg value="-esa" />
-            <classpath refid="project.classpath" />
-            <batchtest fork="yes" filtertrace="false">
-              <fileset dir="tests">
-                  <include name="**/*Test*.java"/>
-              </fileset>
-            </batchtest>
-            <formatter type="brief" usefile="false"/>
-        </junit>
+        <junit-bd />
     </target>
     <target name="tests" depends="test" />
+    
+    <target name="coverage">
+        <jacoco:coverage destfile="jacoco.exec">
+            <junit fork="true" haltonerror="false" haltonfailure="false" failureproperty="test.failed"
+                outputtoformatters="true">
+                <jvmarg value="-ea" />
+                <jvmarg value="-esa" />
+                <classpath refid="project.classpath" />
+                <batchtest fork="yes" filtertrace="false">
+                  <fileset dir="tests">
+                      <include name="**/*Test*.java"/>
+                  </fileset>
+                </batchtest>
+                <formatter type="brief" usefile="false"/>
+            </junit>
+        </jacoco:coverage>
+    </target>
+    
+    <target name="coverage-report" depends="coverage">
+        <jacoco:report>
+            <executiondata>
+                <file file="jacoco.exec" />
+            </executiondata>
+
+            <!-- the class files and optional source files ... -->
+            <structure name="BD Code">
+                <classfiles>
+                    <fileset dir="${classes.dir}" />
+                </classfiles>
+                <sourcefiles encoding="UTF-8">
+                    <fileset dir="${src.dir}" />
+                </sourcefiles>
+            </structure>
+
+            <!-- to produce reports in different formats. -->
+            <!-- <html destdir="${result.report.dir}" />
+            <csv destfile="${result.report.dir}/report.csv" /> -->
+            <xml destfile="jacoco.xml" />
+        </jacoco:report>
+
+        <java classname="com.codacy.CodacyCoverageReporter" fork="true" failonerror="true" classpath="libs/codacy-coverage-reporter-2.0.0-assembly.jar">
+            <arg line="-l Java -r jacoco.xml" />
+        </java>
+    </target>
 
 </project>
