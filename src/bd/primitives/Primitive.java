@@ -69,7 +69,7 @@ public @interface Primitive {
 
   @Retention(RetentionPolicy.RUNTIME)
   @Target({ElementType.TYPE})
-  public @interface Container {
+  @interface Container {
     Primitive[] value();
   }
 
