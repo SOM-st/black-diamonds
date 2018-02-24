@@ -1,9 +1,10 @@
 .metadata
-build
+/build
 codacy-coverage.json
-graal
+/graal
 jacoco.exec
 jacoco.xml
-libs
+/libs
 mx
-src_gen
+/src_gen
+/docs

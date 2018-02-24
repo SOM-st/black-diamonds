@@ -13,6 +13,9 @@ public interface IdProvider<Id> {
   /**
    * Gets a Java string and needs to return an identifier. Typically, this is some form of
    * symbol or interned string that can be safely compared with reference equality.
+   *
+   * @param id the string version of the id
+   * @return the unique identifier
    */
   Id getId(String id);
 }
