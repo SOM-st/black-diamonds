@@ -1,4 +1,4 @@
-package bd.nodes;
+package bd.primitives.nodes;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
 

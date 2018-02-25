@@ -1,4 +1,4 @@
-package bd.nodes;
+package bd.tools.nodes;
 
 /**
  * Interface for tools to identify the operation a node is implementing.

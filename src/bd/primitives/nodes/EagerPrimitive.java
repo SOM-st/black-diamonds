@@ -1,6 +1,7 @@
-package bd.nodes;
+package bd.primitives.nodes;
 
 import bd.primitives.Specializer;
+import bd.tools.nodes.Operation;
 
 
 /**
