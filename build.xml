@@ -9,6 +9,7 @@
     <property name="truffle.dir" value="graal/truffle" />
     <property name="truffle.build" value="${truffle.dir}/mxbuild/dists" />
     <property name="junit.version" value="4.12" />
+    <property name="jacoco.version" value="0.8.0" />
 
     <property name="checkstyle.version" value="7.8.2" />
     <property name="mvn.url" value="https://repo1.maven.org/maven2" />
@@ -110,18 +111,14 @@
 
     <target name="coverage-jars">
         <mkdir dir="${lib.dir}" />
-        <get src="${mvn.url}/org/jacoco/org.jacoco.ant/0.7.9/org.jacoco.ant-0.7.9-nodeps.jar"
+        <get src="${mvn.url}/org/jacoco/org.jacoco.ant/${jacoco.version}/org.jacoco.ant-${jacoco.version}-nodeps.jar"
             usetimestamp="true"
-            dest="${lib.dir}/org.jacoco.ant-0.7.9.jar" />
-        <get src="https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/2.0.0/codacy-coverage-reporter-2.0.0-assembly.jar"
+            dest="${lib.dir}/org.jacoco.ant-${jacoco.version}.jar" />
+        <get src="https://oss.sonatype.org/service/local/repositories/releases/content/com/codacy/codacy-coverage-reporter/2.0.2/codacy-coverage-reporter-2.0.2-assembly.jar"
             usetimestamp="true"
-            dest="${lib.dir}/codacy-coverage-reporter-2.0.0-assembly.jar" />
+            dest="${lib.dir}/codacy-coverage-reporter-assembly.jar" />
     </target>
     
-    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-        <classpath path="${lib.dir}/org.jacoco.ant-0.7.9.jar"/>
-    </taskdef>
-
     <target name="checkstyle-jar">
         <mkdir dir="${lib.dir}" />
         <get src="http://tenet.dl.sourceforge.net/project/checkstyle/checkstyle/${checkstyle.version}/checkstyle-${checkstyle.version}-all.jar"
@@ -193,6 +190,10 @@
     <target name="tests" depends="test" />
     
     <target name="coverage">
+        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+            <classpath path="${lib.dir}/org.jacoco.ant-${jacoco.version}.jar"/>
+        </taskdef>
+
         <jacoco:coverage destfile="jacoco.exec">
             <junit fork="true" haltonerror="false" haltonfailure="false" failureproperty="test.failed"
                 outputtoformatters="true">
@@ -231,7 +232,7 @@
             <xml destfile="jacoco.xml" />
         </jacoco:report>
 
-        <java classname="com.codacy.CodacyCoverageReporter" fork="true" failonerror="true" classpath="libs/codacy-coverage-reporter-2.0.0-assembly.jar">
+        <java classname="com.codacy.CodacyCoverageReporter" fork="true" failonerror="true" classpath="libs/codacy-coverage-reporter-assembly.jar">
             <arg line="-l Java -r jacoco.xml" />
         </java>
     </target>
