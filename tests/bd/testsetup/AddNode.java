@@ -9,7 +9,7 @@ import bd.primitives.Primitive;
 
 @NodeChild(value = "left", type = ExprNode.class)
 @NodeChild(value = "right", type = ExprNode.class)
-@Primitive(className = "Int", primitive = "+", selector = "+")
+@Primitive(className = "Int", primitive = "+", selector = "+", receiverType = Integer.class)
 @GenerateNodeFactory
 public abstract class AddNode extends ExprNode {
 
