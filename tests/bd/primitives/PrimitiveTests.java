@@ -2,6 +2,7 @@ package bd.primitives;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -29,6 +30,9 @@ public class PrimitiveTests {
     assertNotNull(s);
 
     assertEquals("AddNodeFactory", s.getName());
+
+    s = ps.getEagerSpecializer("---", null, null);
+    assertNull(s);
   }
 
   @Test
@@ -37,5 +41,8 @@ public class PrimitiveTests {
     assertNotNull(s);
 
     assertEquals("AddNodeFactory", s.getName());
+
+    s = ps.getParserSpecializer("---", null);
+    assertNull(s);
   }
 }
