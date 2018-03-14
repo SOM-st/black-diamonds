@@ -5,9 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.source.SourceSection;
 
-import bd.nodes.EagerlySpecializable;
-import bd.nodes.WithContext;
 import bd.primitives.Primitive.NoChild;
+import bd.primitives.nodes.EagerlySpecializable;
+import bd.primitives.nodes.WithContext;
 import bd.settings.VmSettings;
 
 

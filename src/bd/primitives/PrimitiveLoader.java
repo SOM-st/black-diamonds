@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.oracle.truffle.api.dsl.NodeFactory;
 
+import bd.basic.IdProvider;
+
 
 /**
  * A PrimitiveLoader provides the basic functionality to load the information about primitives
@@ -18,7 +20,8 @@ import com.oracle.truffle.api.dsl.NodeFactory;
  */
 public abstract class PrimitiveLoader<Context, ExprT, Id> {
 
-  protected final Context context;
+  private final IdProvider<Id> ids;
+  protected final Context      context;
 
   /** Primitives for selector. */
   private final HashMap<Id, Specializer<Context, ExprT, Id>> eagerPrimitives;
@@ -28,7 +31,8 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    *
    * @param context the object representing the language's context
    */
-  protected PrimitiveLoader(final Context context) {
+  protected PrimitiveLoader(final IdProvider<Id> ids, final Context context) {
+    this.ids = ids;
     this.context = context;
     this.eagerPrimitives = new HashMap<>();
   }
@@ -53,7 +57,7 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
           registerPrimitive(prim, specializer);
 
           if (!("".equals(prim.selector()))) {
-            Id selector = getId(prim.selector());
+            Id selector = ids.getId(prim.selector());
             assert !eagerPrimitives.containsKey(
                 selector) : "clash of selectors and eager specialization";
             eagerPrimitives.put(selector, specializer);
@@ -73,13 +77,6 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    */
   protected abstract void registerPrimitive(Primitive prim,
       Specializer<Context, ExprT, Id> specializer);
-
-  /**
-   * Gets a Java string and needs to return an identifier that is used to map to the primitive.
-   * Typically, this is some form of symbol or interned string that can be safely compared with
-   * reference equality.
-   */
-  protected abstract Id getId(String id);
 
   /**
    * Lookup a specializer for use during parsing.
