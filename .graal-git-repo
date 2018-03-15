@@ -1,44 +1,69 @@
-#!/bin/bash
-# This script maintains the Graal+Truffle repository and revision used for
-# testing in the CI setup. We don't use a submodule here to avoid a hard 
+#!/usr/bin/python
+# This is a self-updating script encoding the Graal+Truffle and mx repos and
+# revision used for testing on CI. We don't use a submodules to avoid a hard
 # dependency that might bloat the repository of users of BlackDiamonds
 #
-# To update to latest HEAD of the configure repo,
-#   run `./.graal-git-repo updaterev`
-# To checkout the repo at the specified version,
-#   run `./.graal-git-repo checkout`
+# To update this script to latest HEAD of the configured repos,
+#   run `./graal-git-repo update-script-revs`
+# To checkout the repos at the specified version,
+#   run `./graal-git-repo checkout`
+import sys
+import os
 
-SCRIPT="$0"
- 
-if [ "$1" = "updaterev" ]
-then
-  eval `${SCRIPT}`
-  HEAD_DATA=`git ls-remote ${GRAAL_REPO_URL} HEAD`
-  HEAD_ARR=($HEAD_DATA)
-  HEAD_GRAAL_REV=${HEAD_ARR[0]}
-  HEAD_DATA=`git ls-remote ${MX_REPO_URL} HEAD`
-  HEAD_ARR=($HEAD_DATA)
-  HEAD_MX_REV=${HEAD_ARR[0]}
-  SCRIPT_BODY=`head -n 42 ${SCRIPT}; echo -n "echo "`
-  echo "${SCRIPT_BODY}GRAAL_REPO_REV=${HEAD_GRAAL_REV}
-echo MX_REPO_REV=${HEAD_MX_REV}" > ${SCRIPT}; exit 0
-fi
+# We use the following repositories
+GRAAL_REPO_URL = "https://github.com/smarr/truffle.git"
+MX_REPO_URL    = "https://github.com/graalvm/mx.git"
 
-if [ "$1" = "checkout" ]
-then
-  eval `${SCRIPT}`
-  git clone ${GRAAL_REPO_URL} graal
-  cd graal
-  git reset --hard ${GRAAL_REPO_REV}
-  cd ..
-  git clone ${MX_REPO_URL} mx
-  cd mx
-  git reset --hard ${MX_REPO_REV}
-fi
+# And these are the repo revisions we test against
+GRAAL_REPO_REV = "3ed852dd7266e1423e848b64673f906da2e70ed7"
+MX_REPO_REV    = "41038233e53f5d47a857ee73a2227ff4de9ad1c3"
 
 
-# Version used for testing
-echo GRAAL_REPO_URL=https://github.com/smarr/truffle.git
-echo MX_REPO_URL=https://github.com/graalvm/mx.git
-echo GRAAL_REPO_REV=3b5ddeaa951ee46ec11790d0be76969c8d1ee9e3
-echo MX_REPO_REV=11ac8146e64bcc126fb75b0a738db24af933b693
+def update(lines, var, val):
+    for idx, line in enumerate(lines):
+        if line.startswith(var):
+            print("Updating " + var + " to " + val)
+            lines[idx] = var.ljust(15) + '= "' + val + '"\n'
+            break
+
+
+def run(cmd):
+    print(cmd)
+    return os.popen(cmd).read()
+
+
+if len(sys.argv) == 1:
+    print("To checkout the Graal+Truffle and MX dependencies use:")
+    print("  " + __file__ + " checkout")
+    print("To update the dependencies in this script use:")
+    print("  " + __file__ + " update-script-revs")
+
+if sys.argv[1] == "update-script-revs":
+    graal_head_data = run("git ls-remote " + GRAAL_REPO_URL + " HEAD")
+    graal_head_rev = graal_head_data.split("\t")[0]
+
+    mx_head_data = run("git ls-remote " + MX_REPO_URL + " HEAD")
+    mx_head_rev = mx_head_data.split("\t")[0]
+
+    with open(__file__, 'r') as script_file:
+        content = script_file.readlines()
+        update(content, 'GRAAL_REPO_REV', graal_head_rev)
+        update(content, 'MX_REPO_REV',    mx_head_rev)
+
+    with open(__file__, 'w') as script_file:
+        script_file.writelines(content)
+
+
+def update_repo(folder, repo, rev):
+    folder = os.path.realpath(folder)
+    if not os.path.isdir(folder):
+        print("cloning " + repo)
+        print(run("git clone --depth 5000 " + repo + " " + folder))
+    run("git --git-dir=" + folder + "/.git --work-tree=" + folder +
+        " fetch --depth 5000")
+    print(run("git --git-dir=" + folder + "/.git --work-tree=" + folder +
+              " reset --hard " + rev))
+
+if sys.argv[1] == "checkout":
+    update_repo("graal", GRAAL_REPO_URL, GRAAL_REPO_REV)
+    update_repo("mx",    MX_REPO_URL,    MX_REPO_REV)
