@@ -1,12 +1,12 @@
 #!/usr/bin/python
 # This is a self-updating script encoding the Graal+Truffle and mx repos and
-# revision used for testing on CI. We don't use a submodules to avoid a hard
+# revision used for testing on CI. We don't use submodules to avoid a hard
 # dependency that might bloat the repository of users of BlackDiamonds
 #
-# To update this script to latest HEAD of the configured repos,
-#   run `./graal-git-repo update-script-revs`
-# To checkout the repos at the specified version,
+# To checkout the repos, at the specified version for this version of the code,
 #   run `./graal-git-repo checkout`
+# To update this script, so its revisions point to the latest versions of the
+#    configured repos, run `./graal-git-repo update-script-revs`
 import sys
 import os
 
@@ -37,6 +37,7 @@ if len(sys.argv) == 1:
     print("  " + __file__ + " checkout")
     print("To update the dependencies in this script use:")
     print("  " + __file__ + " update-script-revs")
+    quit()
 
 if sys.argv[1] == "update-script-revs":
     graal_head_data = run("git ls-remote " + GRAAL_REPO_URL + " HEAD")
