@@ -18,8 +18,8 @@
 
     <property name="mx.cmd" value="${basedir}/mx/mx" />
 
-    <property name="build.dir"   value="build"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="build.dir"   location="build"/>
+    <property name="classes.dir" location="${build.dir}/classes"/>
 
     <path id="project.classpath">
         <pathelement location="${classes.dir}" />
@@ -235,6 +235,32 @@
         <java classname="com.codacy.CodacyCoverageReporter" fork="true" failonerror="true" classpath="libs/codacy-coverage-reporter-assembly.jar">
             <arg line="-l Java -r jacoco.xml" />
         </java>
+    </target>
+    
+    <target name="docs">
+      <javadoc 
+          destdir="docs" author="true" version="true" use="true"
+          windowtitle="Black Diamonds JavaDoc"
+          sourcepath="src"
+          packagenames="bd.*"
+          defaultexcludes="yes"
+          excludepackagenames="com.oracle.*"
+          public="true"
+          classpathref="project.classpath">
+
+        <!-- <fileset dir="src" defaultexcludes="yes">
+          <include name="src/**"/> -->
+          <!-- <exclude name="com/dummy/test/doc-files/**"/> -->
+        <!-- </fileset> -->
+
+      <!-- <doctitle><![CDATA[<h1>Test</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2000 Dummy Corp. All Rights Reserved.</i>]]></bottom>
+      <tag name="todo" scope="all" description="To do:"/>
+      <group title="Group 1 Packages" packages="com.dummy.test.a*"/>
+      <group title="Group 2 Packages" packages="com.dummy.test.b*:com.dummy.test.c*"/>
+      <link offline="true" href="http://docs.oracle.com/javase/7/docs/api/" packagelistLoc="C:\tmp"/>
+      <link href="http://docs.oracle.com/javase/7/docs/api/"/> -->
+      </javadoc>
     </target>
 
 </project>

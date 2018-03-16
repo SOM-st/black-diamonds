@@ -58,6 +58,21 @@ The benefit of this optimization is to improve interpreter performance, reduce
 compilation time, and possibly simplify interpreter debugging since it simplifies
 execution drastically.
 
+#### 4. Inlining/Splitting: Support parse-time inlining and run-time splitting
+
+The `inlining` diamond provides infrastructure to support inlining at parse time
+and splitting at execution time. Inlining enables us to optimize more complex
+structures such as loops, iteration, selection, or other elements that often
+take lambdas, closures, or other kind of anonymous methods. If they are provided
+lexically, and are trivially non-accessible by language constructs, it can be
+very beneficial to inline them on the AST level already to optimize execution
+time in the interpreter, which can also reduce compilation time.
+
+This infrastructure provides the basic mechanisms that a language independent.
+This includes a general visitor that can adapt lexical scopes for instance also
+after simple splitting, which can be necessary, for instance to ensure that
+the split methods are independent and specialize independently at run time.
+
 
 License and Acknowledgements
 ----------------------------
