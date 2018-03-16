@@ -18,8 +18,8 @@
 
     <property name="mx.cmd" value="${basedir}/mx/mx" />
 
-    <property name="build.dir"   value="build"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="build.dir"   location="build"/>
+    <property name="classes.dir" location="${build.dir}/classes"/>
 
     <path id="project.classpath">
         <pathelement location="${classes.dir}" />
