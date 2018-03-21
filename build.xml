@@ -1,4 +1,9 @@
-<project name="black-diamonds" basedir="." default="compile" xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="black-diamonds" basedir="." default="compile"
+    xmlns:if="ant:if"
+    xmlns:jacoco="antlib:org.jacoco.ant">
+    
+    <property name="force.java8" value="false" />  <!-- the default value,
+       can be changed by simply setting the property when calling ant -->
 
     <property name="src.dir"     location="src"/>
     <property name="src_gen.dir" location="src_gen"/>
@@ -149,14 +154,17 @@
           <compilerarg line="-s ${src_gen.dir}" />
           <compilerarg line="-XDignore.symbol.file" />
           <compilerarg line="-Xlint:all" />
+          <compilerarg line="--release 8" if:true="${force.java8}" />
         </javac>
         <javac includeantruntime="false" srcdir="${src_gen.dir}" destdir="${classes.dir}" debug="true">
           <classpath refid="project.classpath" />
           <compilerarg line="-s ${src_gen.dir}" />
           <compilerarg line="-Xlint:all" />
+          <compilerarg line="--release 8" if:true="${force.java8}" />
         </javac>
         <javac includeantruntime="false" srcdir="${test.dir}" destdir="${classes.dir}" debug="true">
           <classpath refid="project.classpath" />
+          <compilerarg line="--release 8" if:true="${force.java8}" />
         </javac>
     </target>
     
