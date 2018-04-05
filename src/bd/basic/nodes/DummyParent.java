@@ -13,4 +13,8 @@ public final class DummyParent extends Node {
   public DummyParent(final Node node) {
     this.child = insert(node);
   }
+
+  public void notifyInserted() {
+    super.notifyInserted(child);
+  }
 }
