@@ -102,7 +102,7 @@ public class Specializer<Context, ExprT, Id> {
   @SuppressWarnings("unchecked")
   public ExprT create(final Object[] arguments, final ExprT[] argNodes,
       final SourceSection section, final boolean eagerWrapper) {
-    assert arguments == null || arguments.length == argNodes.length;
+    assert arguments == null || arguments.length >= argNodes.length;
     int numArgs = numberOfNodeConstructorArguments(argNodes);
 
     Object[] ctorArgs = new Object[numArgs];
