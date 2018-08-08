@@ -16,7 +16,7 @@
     <property name="junit.version" value="4.12" />
     <property name="jacoco.version" value="0.8.0" />
 
-    <property name="checkstyle.version" value="7.8.2" />
+    <property name="checkstyle.version" value="8.11" />
     <property name="mvn.url" value="https://repo1.maven.org/maven2" />
 
     <property environment="env"/>
@@ -126,7 +126,7 @@
     
     <target name="checkstyle-jar">
         <mkdir dir="${lib.dir}" />
-        <get src="http://tenet.dl.sourceforge.net/project/checkstyle/checkstyle/${checkstyle.version}/checkstyle-${checkstyle.version}-all.jar"
+        <get src="https://github.com/checkstyle/checkstyle/releases/download/checkstyle-${checkstyle.version}/checkstyle-${checkstyle.version}-all.jar"
             usetimestamp="true"
             dest="${lib.dir}/checkstyle-${checkstyle.version}-all.jar" />
     </target>
