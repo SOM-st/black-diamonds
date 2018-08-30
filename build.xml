@@ -17,7 +17,8 @@
     <property name="jacoco.version" value="0.8.0" />
 
     <property name="checkstyle.version" value="8.11" />
-    <property name="mvn.url" value="https://repo1.maven.org/maven2" />
+    <property name="mvn.url"           value="https://maven-central.storage.googleapis.com/repos/central/data" />  <!-- https://repo1.maven.org/maven2 gives 403 on Travis CI -->
+    
 
     <property environment="env"/>
 
