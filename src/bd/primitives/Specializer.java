@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import com.oracle.truffle.api.dsl.NodeFactory;
 import com.oracle.truffle.api.source.SourceSection;
 
+import bd.inlining.nodes.WithSource;
 import bd.primitives.Primitive.NoChild;
 import bd.primitives.nodes.EagerlySpecializable;
 import bd.primitives.nodes.WithContext;
@@ -120,7 +121,11 @@ public class Specializer<Context, ExprT, Id> {
     }
 
     if (extraChildFactory != null) {
-      ctorArgs[offset] = extraChildFactory.createNode(new Object[extraArity]);
+      Object extraNode = extraChildFactory.createNode(new Object[extraArity]);
+      if (extraNode instanceof WithSource) {
+        ((WithSource) extraNode).initialize(section);
+      }
+      ctorArgs[offset] = extraNode;
       offset += 1;
     }
 

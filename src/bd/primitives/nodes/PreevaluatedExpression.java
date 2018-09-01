@@ -1,6 +1,7 @@
 package bd.primitives.nodes;
 
 import com.oracle.truffle.api.frame.VirtualFrame;
+import com.oracle.truffle.api.nodes.NodeInterface;
 
 
 /**
@@ -12,7 +13,7 @@ import com.oracle.truffle.api.frame.VirtualFrame;
  * afterwards, a new specialization node is determined that then needs to be able to accept the
  * arguments.
  */
-public interface PreevaluatedExpression {
+public interface PreevaluatedExpression extends NodeInterface {
 
   /**
    * Execute the node with the given arguments.

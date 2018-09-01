@@ -1,5 +1,6 @@
 package bd.inlining;
 
+import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.nodes.Node;
 import com.oracle.truffle.api.nodes.NodeUtil;
 import com.oracle.truffle.api.nodes.NodeVisitor;
@@ -36,11 +37,12 @@ public final class ScopeAdaptationVisitor implements NodeVisitor {
    * @return a copy of {@code body} adapted to the given scope
    */
   public static <N extends Node> N adapt(final N body, final Scope<?, ?> newScope,
-      final int appliesTo, final boolean someOuterScopeIsMerged) {
+      final int appliesTo, final boolean someOuterScopeIsMerged,
+      final TruffleLanguage<?> language) {
     N inlinedBody = NodeUtil.cloneNode(body);
 
     return NodeVisitorUtil.applyVisitor(inlinedBody,
-        new ScopeAdaptationVisitor(newScope, appliesTo, someOuterScopeIsMerged));
+        new ScopeAdaptationVisitor(newScope, appliesTo, someOuterScopeIsMerged), language);
   }
 
   private ScopeAdaptationVisitor(final Scope<?, ?> scope, final int appliesTo,
