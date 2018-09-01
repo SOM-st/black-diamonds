@@ -27,7 +27,7 @@ import bd.testsetup.ValueSpecializedNode;
 public class InliningTests {
 
   private final SourceSection source =
-      Source.newBuilder("test").name("test").mimeType("x/test").build().createSection(1);
+      Source.newBuilder("x", "test", "test").mimeType("x/test").build().createSection(1);
 
   private final InlinableNodes<String> nodes =
       new InlinableNodes<String>(new StringId(), Nodes.getInlinableNodes(),
