@@ -21,7 +21,6 @@ import bd.basic.IdProvider;
 public abstract class PrimitiveLoader<Context, ExprT, Id> {
 
   private final IdProvider<Id> ids;
-  protected final Context      context;
 
   /** Primitives for selector. */
   private final HashMap<Id, Specializer<Context, ExprT, Id>> eagerPrimitives;
@@ -31,9 +30,8 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    *
    * @param context the object representing the language's context
    */
-  protected PrimitiveLoader(final IdProvider<Id> ids, final Context context) {
+  protected PrimitiveLoader(final IdProvider<Id> ids) {
     this.ids = ids;
-    this.context = context;
     this.eagerPrimitives = new HashMap<>();
   }
 
@@ -119,23 +117,12 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
   private <T> Specializer<Context, ExprT, Id> createSpecializer(final Primitive prim,
       final NodeFactory<? extends ExprT> factory) {
     try {
-      // Try with erased type signature
       return prim.specializer()
-                 .getConstructor(Primitive.class, NodeFactory.class, Object.class)
-                 .newInstance(prim, factory, context);
+                 .getConstructor(Primitive.class, NodeFactory.class)
+                 .newInstance(prim, factory);
     } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException | SecurityException e) {
+        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
       throw new RuntimeException(e);
-    } catch (NoSuchMethodException e) {
-      try {
-        // Try with concrete type signature
-        return prim.specializer()
-                   .getConstructor(Primitive.class, NodeFactory.class, context.getClass())
-                   .newInstance(prim, factory, context);
-      } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-          | InvocationTargetException | NoSuchMethodException | SecurityException e1) {
-        throw new RuntimeException(e);
-      }
     }
   }
 

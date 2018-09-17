@@ -21,7 +21,7 @@ import bd.testsetup.LangContext;
 
 public class PrimitiveTests {
 
-  private final Primitives ps = new Primitives(new LangContext());
+  private final Primitives ps = new Primitives();
 
   @Test
   public void testPrimitiveAnnotation() {
