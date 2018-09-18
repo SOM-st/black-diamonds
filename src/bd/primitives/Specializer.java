@@ -54,6 +54,10 @@ public class Specializer<Context, ExprT, Id> {
     }
   }
 
+  public Primitive getPrimitive() {
+    return prim;
+  }
+
   public boolean inParser() {
     return prim.inParser() && !prim.requiresArguments();
   }

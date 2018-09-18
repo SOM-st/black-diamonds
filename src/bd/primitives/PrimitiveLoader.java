@@ -35,8 +35,29 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
     this.eagerPrimitives = new HashMap<>();
   }
 
-  /** Returns all node factories that might contain primitives. */
-  protected abstract List<NodeFactory<? extends ExprT>> getFactories();
+  @SuppressWarnings("unchecked")
+  public static <Context, ExprT, Id> void add(final List<Specializer<Context, ExprT, Id>> list,
+      final NodeFactory<? extends ExprT> factory) {
+    Primitive[] primitives = getPrimitiveAnnotation(factory);
+    if (primitives != null && primitives.length != 0) {
+      for (bd.primitives.Primitive prim : primitives) {
+        Specializer<Context, ExprT, Id> specializer = createSpecializer(prim, factory);
+        list.add(specializer);
+      }
+    }
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public static <Context, Id, ExprT> void addAll(
+      final List<Specializer<Context, ExprT, Id>> list,
+      final List toAdd) {
+    for (Object factory : toAdd) {
+      add(list, (NodeFactory<? extends ExprT>) factory);
+    }
+  }
+
+  /** Returns all node specializers. */
+  protected abstract List<Specializer<Context, ExprT, Id>> getSpecializers();
 
   /**
    * Setup the lookup data structures for VM primitive registration as well as
@@ -46,21 +67,16 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    * This methods should be called when the constructor completes.
    */
   protected void initialize() {
-    List<NodeFactory<? extends ExprT>> primFacts = getFactories();
-    for (NodeFactory<? extends ExprT> primFact : primFacts) {
-      Primitive[] prims = getPrimitiveAnnotation(primFact);
-      if (prims != null) {
-        for (bd.primitives.Primitive prim : prims) {
-          Specializer<Context, ExprT, Id> specializer = createSpecializer(prim, primFact);
-          registerPrimitive(prim, specializer);
+    List<Specializer<Context, ExprT, Id>> specializers = getSpecializers();
+    for (Specializer<Context, ExprT, Id> s : specializers) {
+      registerPrimitive(s);
 
-          if (!("".equals(prim.selector()))) {
-            Id selector = ids.getId(prim.selector());
-            assert !eagerPrimitives.containsKey(
-                selector) : "clash of selectors and eager specialization";
-            eagerPrimitives.put(selector, specializer);
-          }
-        }
+      String sel = s.getPrimitive().selector();
+      if (!("".equals(sel))) {
+        Id selector = ids.getId(sel);
+        assert !eagerPrimitives.containsKey(
+            selector) : "clash of selectors and eager specialization";
+        eagerPrimitives.put(selector, s);
       }
     }
   }
@@ -73,8 +89,7 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    * @param prim the primitive annotation
    * @param specializer the specializer object for this primitive
    */
-  protected abstract void registerPrimitive(Primitive prim,
-      Specializer<Context, ExprT, Id> specializer);
+  protected abstract void registerPrimitive(Specializer<Context, ExprT, Id> specializer);
 
   /**
    * Lookup a specializer for use during parsing.
@@ -114,8 +129,8 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
    * Create a {@link Specializer} for the given {@link Primitive}.
    */
   @SuppressWarnings("unchecked")
-  private <T> Specializer<Context, ExprT, Id> createSpecializer(final Primitive prim,
-      final NodeFactory<? extends ExprT> factory) {
+  private static <Context, ExprT, Id, T> Specializer<Context, ExprT, Id> createSpecializer(
+      final Primitive prim, final NodeFactory<? extends ExprT> factory) {
     try {
       return prim.specializer()
                  .getConstructor(Primitive.class, NodeFactory.class)
@@ -129,7 +144,8 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
   /**
    * Get the {@link Primitive} annotation from a {@link NodeFactory}.
    */
-  Primitive[] getPrimitiveAnnotation(final NodeFactory<? extends ExprT> factory) {
+  static <ExprT> Primitive[] getPrimitiveAnnotation(
+      final NodeFactory<? extends ExprT> factory) {
     Class<?> nodeClass = factory.getNodeClass();
     return nodeClass.getAnnotationsByType(Primitive.class);
   }
