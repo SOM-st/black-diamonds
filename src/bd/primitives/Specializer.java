@@ -22,20 +22,18 @@ import bd.settings.VmSettings;
  *          of interned string construct
  */
 public class Specializer<Context, ExprT, Id> {
-  protected final Context                    context;
-  protected final Primitive                  prim;
-  protected final NodeFactory<ExprT>         fact;
+  protected final Primitive          prim;
+  protected final NodeFactory<ExprT> fact;
+
   private final NodeFactory<? extends ExprT> extraChildFactory;
 
   private final int     extraArity;
   private final boolean requiresContext;
 
   @SuppressWarnings("unchecked")
-  public Specializer(final Primitive prim, final NodeFactory<ExprT> fact,
-      final Context context) {
+  public Specializer(final Primitive prim, final NodeFactory<ExprT> fact) {
     this.prim = prim;
     this.fact = fact;
-    this.context = context;
 
     this.requiresContext = WithContext.class.isAssignableFrom(fact.getNodeClass());
 
@@ -54,6 +52,10 @@ public class Specializer<Context, ExprT, Id> {
         throw new RuntimeException(e);
       }
     }
+  }
+
+  public Primitive getPrimitive() {
+    return prim;
   }
 
   public boolean inParser() {
@@ -102,7 +104,7 @@ public class Specializer<Context, ExprT, Id> {
 
   @SuppressWarnings("unchecked")
   public ExprT create(final Object[] arguments, final ExprT[] argNodes,
-      final SourceSection section, final boolean eagerWrapper) {
+      final SourceSection section, final boolean eagerWrapper, final Context context) {
     assert arguments == null || arguments.length >= argNodes.length;
     int numArgs = numberOfNodeConstructorArguments(argNodes);
 

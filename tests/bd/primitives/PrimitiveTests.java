@@ -21,7 +21,7 @@ import bd.testsetup.LangContext;
 
 public class PrimitiveTests {
 
-  private final Primitives ps = new Primitives(new LangContext());
+  private final Primitives ps = new Primitives();
 
   @Test
   public void testPrimitiveAnnotation() {
@@ -80,7 +80,7 @@ public class PrimitiveTests {
   @Test
   public void testExtraChild() {
     Specializer<LangContext, ExprNode, String> s = ps.getParserSpecializer("addAbs", null);
-    ExprNode n = s.create(null, new ExprNode[1], null, true);
+    ExprNode n = s.create(null, new ExprNode[1], null, true, null);
     assertTrue(n instanceof AddAbsNode);
 
     // Note: this is fragile, because it depends on the TruffleDSL node implementation strategy
