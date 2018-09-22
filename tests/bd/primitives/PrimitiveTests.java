@@ -25,7 +25,7 @@ public class PrimitiveTests {
 
   @Test
   public void testPrimitiveAnnotation() {
-    Primitive[] annotations = ps.getPrimitiveAnnotation(AddNodeFactory.getInstance());
+    Primitive[] annotations = Primitives.getPrimitiveAnnotation(AddNodeFactory.getInstance());
     Primitive p = annotations[0];
 
     assertEquals("Int", p.className());

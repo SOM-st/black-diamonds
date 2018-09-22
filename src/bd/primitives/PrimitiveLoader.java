@@ -35,7 +35,6 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
     this.eagerPrimitives = new HashMap<>();
   }
 
-  @SuppressWarnings("unchecked")
   public static <Context, ExprT, Id> void add(final List<Specializer<Context, ExprT, Id>> list,
       final NodeFactory<? extends ExprT> factory) {
     Primitive[] primitives = getPrimitiveAnnotation(factory);
