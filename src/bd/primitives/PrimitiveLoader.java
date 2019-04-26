@@ -20,7 +20,7 @@ import bd.basic.IdProvider;
  */
 public abstract class PrimitiveLoader<Context, ExprT, Id> {
 
-  private final IdProvider<Id> ids;
+  protected final IdProvider<Id> ids;
 
   /** Primitives for selector. */
   private final HashMap<Id, Specializer<Context, ExprT, Id>> eagerPrimitives;
