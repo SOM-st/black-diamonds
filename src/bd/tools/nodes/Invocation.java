@@ -3,6 +3,7 @@ package bd.tools.nodes;
 import com.oracle.truffle.api.nodes.NodeInterface;
 
 
+// TODO: How is Invocation different from Operation? These two are really similar. Should figure out whether we really need two at some point.
 /**
  * Nodes implementing this interface represent some kind of invocation.
  * Typically, this would be a method or function call, or some kind of message send.
