@@ -73,6 +73,14 @@ This includes a general visitor that can adapt lexical scopes for instance also
 after simple splitting, which can be necessary, for instance to ensure that
 the split methods are independent and specialize independently at run time.
 
+#### 5. Tools
+
+The `tools` diamond provides basic abstractions that are shared by tools.
+
+#### 6. Source
+
+The `source` diamond provides basic abstractions over source code that can
+be shared by different languages and diamonds.
 
 License and Acknowledgements
 ----------------------------
