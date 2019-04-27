@@ -1,5 +1,7 @@
 package bd.primitives.nodes;
 
+import com.oracle.truffle.api.nodes.NodeInterface;
+
 import bd.primitives.PrimitiveLoader;
 
 
@@ -15,6 +17,6 @@ import bd.primitives.PrimitiveLoader;
  *          fluent methods
  * @param <Context> the type of the context object
  */
-public interface WithContext<ExprT, Context> {
+public interface WithContext<ExprT, Context> extends NodeInterface {
   ExprT initialize(Context context);
 }

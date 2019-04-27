@@ -1,6 +1,7 @@
 package bd.inlining.nodes;
 
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.nodes.NodeInterface;
 import com.oracle.truffle.api.nodes.RootNode;
 
 import bd.inlining.Inline;
@@ -25,7 +26,7 @@ import bd.inlining.ScopeBuilder;
  *
  * @param <SB> the concrete type of the used {@link ScopeBuilder}
  */
-public interface Inlinable<SB extends ScopeBuilder<SB>> {
+public interface Inlinable<SB extends ScopeBuilder<SB>> extends NodeInterface {
 
   /**
    * Inline the give node in the context defined by {@code ScopeBuilder}.

@@ -3,6 +3,7 @@ package bd.inlining.nodes;
 import com.oracle.truffle.api.frame.Frame;
 import com.oracle.truffle.api.frame.FrameSlot;
 import com.oracle.truffle.api.nodes.Node;
+import com.oracle.truffle.api.nodes.NodeInterface;
 
 import bd.inlining.ScopeAdaptationVisitor;
 
@@ -18,7 +19,7 @@ import bd.inlining.ScopeAdaptationVisitor;
  * splitting, which separates scopes. In either case, nodes with scope references need to be
  * adapted, which is done with {@link #replaceAfterScopeChange(ScopeAdaptationVisitor)}.
  */
-public interface ScopeReference {
+public interface ScopeReference extends NodeInterface {
 
   /**
    * Replaces the current node with one that is adapted to match the a changed scope.
