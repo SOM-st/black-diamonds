@@ -1,5 +1,6 @@
 package bd.primitives.nodes;
 
+import com.oracle.truffle.api.nodes.NodeInterface;
 import com.oracle.truffle.api.source.SourceSection;
 
 
@@ -12,7 +13,7 @@ import com.oracle.truffle.api.source.SourceSection;
  *          of interned string construct
  * @param <Context> the type of the context object
  */
-public interface EagerlySpecializable<ExprT, Id, Context> {
+public interface EagerlySpecializable<ExprT, Id, Context> extends NodeInterface {
 
   /**
    * Initialize the node with a source section and whether it was wrapped into a
