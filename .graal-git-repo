@@ -15,8 +15,8 @@ GRAAL_REPO_URL = "https://github.com/smarr/truffle.git"
 MX_REPO_URL    = "https://github.com/graalvm/mx.git"
 
 # And these are the repo revisions we test against
-GRAAL_REPO_REV = "a9fba6a775ffc60a90959d2eff4e66d15e9867a9"
-MX_REPO_REV    = "5bc7f83b9d66a31259b90933fcd0aa64d38b8d1e"
+GRAAL_REPO_REV = "efc4e8796cce52b5472ff341ec1115bb488d94f4"
+MX_REPO_REV    = "54a872f3939a7de117b8297501a53b1afae16b0b"
 
 
 def update(lines, var, val):

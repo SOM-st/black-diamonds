@@ -10,9 +10,9 @@
     <property name="test.dir"    value="tests"/>
     <property name="lib.dir"     value="libs"/>
     <property name="sdk.dir"     value="graal/sdk" />
-    <property name="sdk.build"   value="${sdk.dir}/mxbuild/dists" />
+    <property name="sdk.build"   value="${sdk.dir}/mxbuild/dists/jdk1.8" />
     <property name="truffle.dir" value="graal/truffle" />
-    <property name="truffle.build" value="${truffle.dir}/mxbuild/dists" />
+    <property name="truffle.build" value="${truffle.dir}/mxbuild/dists/jdk1.8" />
     <property name="junit.version" value="4.12" />
     <property name="jacoco.version" value="0.8.0" />
 
