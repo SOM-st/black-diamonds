@@ -77,9 +77,7 @@ public class Specializer<Context, ExprT, Id> {
   public boolean matches(final Object[] args, final ExprT[] argNodes) {
     // TODO: figure out whether we really want it like this with a VmSetting, or whether
     // there should be something on the context
-    if (prim.disabled() && VmSettings.DYNAMIC_METRICS) {
-      return false;
-    }
+    assert !(prim.disabled() && VmSettings.DYNAMIC_METRICS);
 
     if (args == null || prim.receiverType().length == 0) {
       // no constraints, so, it matches
