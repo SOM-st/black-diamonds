@@ -7,6 +7,7 @@ import java.util.List;
 import com.oracle.truffle.api.dsl.NodeFactory;
 
 import bd.basic.IdProvider;
+import bd.settings.VmSettings;
 
 
 /**
@@ -68,9 +69,16 @@ public abstract class PrimitiveLoader<Context, ExprT, Id> {
   protected void initialize() {
     List<Specializer<Context, ExprT, Id>> specializers = getSpecializers();
     for (Specializer<Context, ExprT, Id> s : specializers) {
+      // TODO: figure out whether we really want it like this with a VmSetting, or whether
+      // there should be something on the context
+      if (s.getPrimitive().disabled() && VmSettings.DYNAMIC_METRICS) {
+        continue;
+      }
+
       registerPrimitive(s);
 
       String sel = s.getPrimitive().selector();
+
       if (!("".equals(sel))) {
         Id selector = ids.getId(sel);
         assert !eagerPrimitives.containsKey(
