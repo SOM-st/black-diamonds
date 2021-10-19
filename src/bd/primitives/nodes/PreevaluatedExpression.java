@@ -23,4 +23,12 @@ public interface PreevaluatedExpression extends NodeInterface {
    * @return result of node execution
    */
   Object doPreEvaluated(VirtualFrame frame, Object[] args);
+
+  Object doPreUnary(VirtualFrame frame, Object rcvr);
+
+  Object doPreBinary(VirtualFrame frame, Object rcvr, Object arg);
+
+  Object doPreTernary(VirtualFrame frame, Object rcvr, Object arg1, Object arg2);
+
+  Object doPreQuat(VirtualFrame frame, Object rcvr, Object arg1, Object arg2, Object arg3);
 }
