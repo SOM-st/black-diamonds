@@ -78,6 +78,10 @@
           <arg value="status" />
           <arg value="*.java" />
       </exec>
+      <exec executable="git" dir="${basedir}">
+          <arg value="diff" />
+          <arg value="*.java" />
+      </exec>
       <exec executable="git" dir="${basedir}" failonerror="true">
           <arg value="diff-index" />
           <arg value="--quiet" />

@@ -41,7 +41,7 @@ public class SourceCoordinate {
   }
 
   public static SourceCoordinate createEmpty() {
-    return new SourceCoordinate(0, 0, 0, 0);
+    return new SourceCoordinate(1, 1, 0, 0);
   }
 
   public static SourceCoordinate create(final int startLine, final int startColumn,
