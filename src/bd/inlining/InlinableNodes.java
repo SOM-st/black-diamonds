@@ -62,8 +62,9 @@ public final class InlinableNodes<Id> {
       assert ann != null;
 
       Constructor<?>[] ctors = nodeClass.getConstructors();
-      assert ctors.length == 1 : "We expect nodes marked with Inline to have only one constructor,"
-          + " or be used via node factories.";
+      assert ctors.length == 1
+          : "We expect nodes marked with Inline to have only one constructor,"
+              + " or be used via node factories.";
 
       for (Inline inAn : ann) {
         assert !"".equals(inAn.selector());
