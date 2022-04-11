@@ -11,12 +11,12 @@ import sys
 import os
 
 # We use the following repositories
-GRAAL_REPO_URL = "https://github.com/smarr/truffle.git"
+GRAAL_REPO_URL = "https://github.com/oracle/graal.git"
 MX_REPO_URL    = "https://github.com/graalvm/mx.git"
 
 # And these are the repo revisions we test against
-GRAAL_REPO_REV = "60bdbbd657e21d98fa0e6141fe3f4a786010b9e8"
-MX_REPO_REV    = "7ffcabe734973b89f0211da3a174ac2d298c78bc"
+GRAAL_REPO_REV = "91b68c2bcb9a0f41c0f437b6d7adf736786f36b6"
+MX_REPO_REV    = "65c6727a0080515696c25934f3da02ef7a1aa43a"
 
 
 def update(lines, var, val):
