@@ -1,18 +1,15 @@
 <project name="black-diamonds" basedir="." default="compile"
     xmlns:if="ant:if"
     xmlns:jacoco="antlib:org.jacoco.ant">
-    
-    <property name="force.java8" value="false" />  <!-- the default value,
-       can be changed by simply setting the property when calling ant -->
 
     <property name="src.dir"     location="src"/>
     <property name="src_gen.dir" location="src_gen"/>
     <property name="test.dir"    value="tests"/>
     <property name="lib.dir"     value="libs"/>
     <property name="sdk.dir"     value="graal/sdk" />
-    <property name="sdk.build"   value="${sdk.dir}/mxbuild/dists/jdk1.8" />
+    <property name="sdk.build"   value="${sdk.dir}/mxbuild/dists" />
     <property name="truffle.dir" value="graal/truffle" />
-    <property name="truffle.build" value="${truffle.dir}/mxbuild/dists/jdk1.8" />
+    <property name="truffle.build" value="${truffle.dir}/mxbuild/dists" />
     <property name="junit.version" value="4.12" />
     <property name="jacoco.version" value="0.8.0" />
 
@@ -159,17 +156,14 @@
           <compilerarg line="-s ${src_gen.dir}" />
           <compilerarg line="-XDignore.symbol.file" />
           <compilerarg line="-Xlint:all" />
-          <compilerarg line="--release 8" if:true="${force.java8}" />
         </javac>
         <javac includeantruntime="false" srcdir="${src_gen.dir}" destdir="${classes.dir}" debug="true">
           <classpath refid="project.classpath" />
           <compilerarg line="-s ${src_gen.dir}" />
           <compilerarg line="-Xlint:all" />
-          <compilerarg line="--release 8" if:true="${force.java8}" />
         </javac>
         <javac includeantruntime="false" srcdir="${test.dir}" destdir="${classes.dir}" debug="true">
           <classpath refid="project.classpath" />
-          <compilerarg line="--release 8" if:true="${force.java8}" />
         </javac>
     </target>
     

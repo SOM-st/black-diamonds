@@ -16,6 +16,10 @@ import com.oracle.truffle.api.source.SourceSection;
  * <p>
  * The {@code charIndex} may not be set. It can be derived from startLine and startColumn,
  * if the source file is present.
+ *
+ * <p>
+ * In addition to an object representation, a {@code long}-based representation,
+ * is supported, too.
  */
 public class SourceCoordinate {
   public final int           startLine;
@@ -109,5 +113,36 @@ public class SourceCoordinate {
 
   public static String getURI(final Source source) {
     return source.getURI().toString();
+  }
+
+  public static long createEmptyCoordinate() {
+    // start at column 1, index 1
+    return 0x1L;
+  }
+
+  public static long createCoordinate(final SourceSection section) {
+    return create(section.getCharIndex(), section.getCharLength());
+  }
+
+  public static long create(final int startIndex, final int length) {
+    return (((long) length) << 32) | (startIndex & 0xFFFFFFFFL);
+  }
+
+  public static long withZeroLength(final long coord) {
+    return coord & 0xFFFFFFFFL;
+  }
+
+  public static int getStartIndex(final long coord) {
+    return (int) (coord & 0xFFFFFFFFL);
+  }
+
+  public static int getLength(final long coord) {
+    return (int) ((coord >>> 32) & 0xFFFFFFFFL);
+  }
+
+  public static SourceSection createSourceSection(final Source source, final long coord) {
+    int startIndex = getStartIndex(coord);
+    int length = getLength(coord);
+    return source.createSection(startIndex, length);
   }
 }
