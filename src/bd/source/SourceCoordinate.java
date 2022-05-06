@@ -111,6 +111,12 @@ public class SourceCoordinate {
     return ":" + section.getStartLine() + ":" + section.getStartColumn();
   }
 
+  public static String getLocationQualifier(final int startIndex, final Source source) {
+    int lineNumber = source.getLineNumber(startIndex);
+    int column = source.getColumnNumber(startIndex);
+    return ":" + lineNumber + ":" + column;
+  }
+
   public static String getURI(final Source source) {
     return source.getURI().toString();
   }
