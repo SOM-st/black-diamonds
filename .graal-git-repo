@@ -15,8 +15,8 @@ GRAAL_REPO_URL = "https://github.com/oracle/graal.git"
 MX_REPO_URL    = "https://github.com/graalvm/mx.git"
 
 # And these are the repo revisions we test against
-GRAAL_REPO_REV = "91b68c2bcb9a0f41c0f437b6d7adf736786f36b6"
-MX_REPO_REV    = "65c6727a0080515696c25934f3da02ef7a1aa43a"
+GRAAL_REPO_REV = "a9e15706f5b24f7fca1057121ece98e92ae7f68c"
+MX_REPO_REV    = "549720aaa2393348f429ac867a66b466291bf0c8"
 
 
 def update(lines, var, val):

@@ -14,7 +14,8 @@ import bd.inlining.nodes.ScopeReference;
  */
 public final class ScopeAdaptationVisitor implements NodeVisitor {
 
-  protected final Scope<?, ?> scope;
+  protected final Scope<?, ?> newScope;
+  protected final Scope<?, ?> oldScope;
 
   protected final boolean outerScopeChanged;
 
@@ -37,21 +38,28 @@ public final class ScopeAdaptationVisitor implements NodeVisitor {
    * @return a copy of {@code body} adapted to the given scope
    */
   public static <N extends Node> N adapt(final N body, final Scope<?, ?> newScope,
+      final Scope<?, ?> oldScope,
       final int appliesTo, final boolean someOuterScopeIsMerged,
       final TruffleLanguage<?> language) {
     N inlinedBody = NodeUtil.cloneNode(body);
 
     return NodeVisitorUtil.applyVisitor(inlinedBody,
-        new ScopeAdaptationVisitor(newScope, appliesTo, someOuterScopeIsMerged), language);
+        new ScopeAdaptationVisitor(newScope, oldScope, appliesTo, someOuterScopeIsMerged),
+        language);
   }
 
-  private ScopeAdaptationVisitor(final Scope<?, ?> scope, final int appliesTo,
-      final boolean outerScopeChanged) {
-    if (scope == null) {
+  private ScopeAdaptationVisitor(final Scope<?, ?> newScope, final Scope<?, ?> oldScope,
+      final int appliesTo, final boolean outerScopeChanged) {
+    if (newScope == null) {
       throw new IllegalArgumentException(
-          "InliningVisitor requires a scope, but got scope==null");
+          "InliningVisitor requires a scope, but got newScope==null");
     }
-    this.scope = scope;
+    if (oldScope == null) {
+      throw new IllegalArgumentException(
+          "InliningVisitor requires a scope, but got oldScope==null");
+    }
+    this.newScope = newScope;
+    this.oldScope = oldScope;
     this.contextLevel = appliesTo;
     this.outerScopeChanged = outerScopeChanged;
   }
@@ -113,7 +121,7 @@ public final class ScopeAdaptationVisitor implements NodeVisitor {
    * @return the adapted version of the variable
    */
   public <N extends Node> ScopeElement<N> getAdaptedVar(final Variable<N> var) {
-    return getSplitVar(var, scope, 0);
+    return getSplitVar(var, newScope, 0);
   }
 
   /**
@@ -128,7 +136,7 @@ public final class ScopeAdaptationVisitor implements NodeVisitor {
    */
   @SuppressWarnings("unchecked")
   public <S extends Scope<S, MethodT>, MethodT> S getScope(final MethodT method) {
-    return ((S) scope).getScope(method);
+    return ((S) newScope).getScope(method);
   }
 
   /**
@@ -141,7 +149,7 @@ public final class ScopeAdaptationVisitor implements NodeVisitor {
    */
   @SuppressWarnings("unchecked")
   public <S extends Scope<S, MethodT>, MethodT> S getCurrentScope() {
-    return (S) scope;
+    return (S) newScope;
   }
 
   /**
@@ -241,6 +249,6 @@ public final class ScopeAdaptationVisitor implements NodeVisitor {
 
   @Override
   public String toString() {
-    return getClass().getSimpleName() + "[" + scope.getName() + "]";
+    return getClass().getSimpleName() + "[" + newScope.getName() + "]";
   }
 }
